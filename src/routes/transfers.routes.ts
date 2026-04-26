@@ -12,7 +12,15 @@ router.use(requireAuth);
 
 const createSchema = z.object({
   quoteId: z.string().uuid(),
-  recipientName: z.string().trim().min(1).max(255).optional(),
+  recipientName: z.string().trim().min(1).max(255),
+  recipientAccount: z.string().trim().min(4).max(64).optional(),
+  recipientCountry: z
+    .string()
+    .trim()
+    .length(2)
+    .transform((s) => s.toUpperCase())
+    .optional(),
+  recipientEmail: z.string().email().optional(),
 });
 
 router.get("/", async (req, res, next) => {
@@ -31,6 +39,9 @@ router.post("/", async (req, res, next) => {
       userId: req.userId!,
       quoteId: body.quoteId,
       recipientName: body.recipientName,
+      recipientAccount: body.recipientAccount,
+      recipientCountry: body.recipientCountry,
+      recipientEmail: body.recipientEmail,
     });
     res.status(201).json({ transfer });
   } catch (err) {

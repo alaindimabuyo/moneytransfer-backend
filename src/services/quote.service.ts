@@ -2,6 +2,7 @@ import { Quote, RateSnapshot, TransferRequest, sequelize } from "../models";
 import { getRate } from "./exchangeRate.service";
 import { isSupportedCurrency } from "../lib/currencies";
 import { badRequest, notFound, conflict } from "../lib/errors";
+import { col, fn, literal } from "sequelize";
 
 const QUOTE_VALIDITY_MINUTES = 10;
 const FEE_PERCENT = 0.005; // 0.5%
@@ -94,10 +95,42 @@ export async function listQuotesForUser(userId: string) {
   });
 }
 
+/**
+ * Top N (default 3) most-used currency pairs for a user, derived from their
+ * quote history. Returned in descending count order. Empty array if the user
+ * has no quotes yet — the frontend should hide the chips entirely in that case.
+ */
+export async function listTopPairsForUser(userId: string, limit = 3) {
+  const rows = (await Quote.findAll({
+    where: { userId },
+    attributes: [
+      "sourceCurrency",
+      "targetCurrency",
+      [fn("COUNT", col("id")), "count"],
+    ],
+    group: ["sourceCurrency", "targetCurrency"],
+    order: [[literal('"count"'), "DESC"]],
+    limit,
+    raw: true,
+  })) as unknown as Array<{
+    sourceCurrency: string;
+    targetCurrency: string;
+    count: string;
+  }>;
+  return rows.map((r) => ({
+    sourceCurrency: r.sourceCurrency,
+    targetCurrency: r.targetCurrency,
+    count: Number(r.count),
+  }));
+}
+
 export async function submitTransferFromQuote(args: {
   userId: string;
   quoteId: string;
-  recipientName?: string;
+  recipientName: string;
+  recipientAccount?: string;
+  recipientCountry?: string;
+  recipientEmail?: string;
 }) {
   return sequelize.transaction(async (tx) => {
     const quote = await Quote.findOne({
@@ -124,7 +157,10 @@ export async function submitTransferFromQuote(args: {
         quoteId: quote.id,
         status: "pending",
         submittedAt: new Date(),
-        recipientName: args.recipientName ?? null,
+        recipientName: args.recipientName,
+        recipientAccount: args.recipientAccount ?? null,
+        recipientCountry: args.recipientCountry ?? null,
+        recipientEmail: args.recipientEmail ?? null,
       },
       { transaction: tx }
     );

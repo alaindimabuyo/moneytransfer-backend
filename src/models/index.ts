@@ -3,6 +3,7 @@ import { User } from "./User";
 import { RateSnapshot } from "./RateSnapshot";
 import { Quote } from "./Quote";
 import { TransferRequest } from "./TransferRequest";
+import { HistoricalRateSeries } from "./HistoricalRateSeries";
 
 User.hasMany(Quote, { foreignKey: "userId", as: "quotes" });
 Quote.belongsTo(User, { foreignKey: "userId", as: "user" });
@@ -28,4 +29,11 @@ Quote.hasOne(TransferRequest, {
 });
 TransferRequest.belongsTo(Quote, { foreignKey: "quoteId", as: "quote" });
 
-export { sequelize, User, RateSnapshot, Quote, TransferRequest };
+export {
+  sequelize,
+  User,
+  RateSnapshot,
+  Quote,
+  TransferRequest,
+  HistoricalRateSeries,
+};

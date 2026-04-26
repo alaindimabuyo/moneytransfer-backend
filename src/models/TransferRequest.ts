@@ -23,6 +23,9 @@ export class TransferRequest extends Model<
   declare status: TransferStatus;
   declare submittedAt: Date;
   declare recipientName: CreationOptional<string | null>;
+  declare recipientAccount: CreationOptional<string | null>;
+  declare recipientCountry: CreationOptional<string | null>;
+  declare recipientEmail: CreationOptional<string | null>;
   declare createdAt: CreationOptional<Date>;
   declare updatedAt: CreationOptional<Date>;
 }
@@ -54,6 +57,18 @@ TransferRequest.init(
     },
     recipientName: {
       type: DataTypes.STRING(255),
+      allowNull: true,
+    },
+    recipientAccount: {
+      type: DataTypes.STRING(64),
+      allowNull: true,
+    },
+    recipientCountry: {
+      type: DataTypes.CHAR(2),
+      allowNull: true,
+    },
+    recipientEmail: {
+      type: DataTypes.STRING(254),
       allowNull: true,
     },
     createdAt: DataTypes.DATE,

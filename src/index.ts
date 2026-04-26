@@ -7,6 +7,7 @@ import authRoutes from "./routes/auth.routes";
 import quotesRoutes from "./routes/quotes.routes";
 import transfersRoutes from "./routes/transfers.routes";
 import metaRoutes from "./routes/meta.routes";
+import ratesRoutes from "./routes/rates.routes";
 import { errorHandler } from "./middleware/errorHandler";
 
 const app = express();
@@ -28,6 +29,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/quotes", quotesRoutes);
 app.use("/api/transfers", transfersRoutes);
 app.use("/api/meta", metaRoutes);
+app.use("/api/rates", ratesRoutes);
 
 app.use(errorHandler);
 

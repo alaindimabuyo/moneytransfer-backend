@@ -5,6 +5,7 @@ import {
   createQuote,
   getQuoteForUser,
   listQuotesForUser,
+  listTopPairsForUser,
 } from "../services/quote.service";
 import { SUPPORTED_CURRENCIES } from "../lib/currencies";
 
@@ -39,6 +40,16 @@ router.post("/", async (req, res, next) => {
       quote: result.quote,
       cacheStatus: result.cacheStatus,
     });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// IMPORTANT: register before /:id so it isn't shadowed.
+router.get("/top-pairs", async (req, res, next) => {
+  try {
+    const pairs = await listTopPairsForUser(req.userId!);
+    res.json({ pairs });
   } catch (err) {
     next(err);
   }
