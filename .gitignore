@@ -6,8 +6,6 @@ dist/
 *.tsbuildinfo
 
 # Environment & secrets — NEVER COMMIT
-.env
-.env.local
 .env.*.local
 
 # Testing & coverage
@@ -34,3 +32,4 @@ pnpm-debug.log*
 # Misc
 .tmp/
 tmp/
+config.bat
